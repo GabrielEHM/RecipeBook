@@ -3,9 +3,6 @@ name: RecipeBook
 volumes:
   sql-server-data:
     driver: local
-  sqldata:
-  sqllog:
-  sqlbackup:
 
 services:
   recipebook:
@@ -25,9 +22,6 @@ services:
     restart: always
     volumes:
       - sql-server-data:/var/opt/mssql/
-      - sqldata:/var/opt/sqlserver/data
-      - sqllog:/var/opt/sqlserver/log
-      - sqlbackup:/var/opt/sqlserver/backup
       - /c/docker/shared:/usr/shared
     ports:
       - '1433:1433'
