@@ -1,0 +1,33 @@
+name: RecipeBook
+
+volumes:
+  sql-server-data:
+    driver: local
+  sqldata:
+  sqllog:
+  sqlbackup:
+
+services:
+  recipebook:
+    image: ${DOCKER_REGISTRY-}recipebook
+    container_name: app
+    build:
+      context: .
+      dockerfile: RecipeBook/Dockerfile
+    depends_on:
+      - database
+
+  database:
+    image: mcr.microsoft.com/mssql/server
+    container_name: database
+    env_file:
+      - RecipeBook/sqlserver.env
+    restart: always
+    volumes:
+      - sql-server-data:/var/opt/mssql/
+      - sqldata:/var/opt/sqlserver/data
+      - sqllog:/var/opt/sqlserver/log
+      - sqlbackup:/var/opt/sqlserver/backup
+      - /c/docker/shared:/usr/shared
+    ports:
+      - '1433:1433'
