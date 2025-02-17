@@ -18,7 +18,7 @@ var masterConnectionString = new SqlConnectionStringBuilder(baseConnectionString
 
 using (var masterConnection = new SqlConnection(masterConnectionString))
 {
-    CreateDatabase(masterConnection);
+    MigrateDatabase(masterConnection);
 }
 
 var recipeBookConnectionString = new SqlConnectionStringBuilder(baseConnectionString)
@@ -39,15 +39,30 @@ using (var connection = new SqlConnection(recipeBookConnectionString))
     connection.Close();
 }
 
-void CreateDatabase(DbConnection connection)
+void MigrateDatabase(DbConnection connection)
 {
     try
     {
-        var scriptPath = Path.Combine(Directory.GetCurrentDirectory(), "SQL Scripts", "0001-CreateDatabase.sql");
+        string[] fileEntries = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "SQL Scripts"));
+
+        foreach (var scriptPath in fileEntries)
+        {
+            RunSqlFile(connection, scriptPath);
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred while creating the database. \n {ex.Message}");
+        throw;
+    }
+}
+
+void RunSqlFile(DbConnection connection, string scriptPath)
+{
+    try
+    {
         var sqlScript = File.ReadAllText(scriptPath);
-
-        var commands = sqlScript.Split(new[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
-
+        var commands = sqlScript.Split(["GO"], StringSplitOptions.RemoveEmptyEntries);
         connection.Open();
         foreach (var commandText in commands)
         {
@@ -61,7 +76,7 @@ void CreateDatabase(DbConnection connection)
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"An error occurred while creating the database. \n {ex.Message}");
+        Console.WriteLine($"An error occurred while running the SQL script. \n {ex.Message}");
         throw;
     }
 }

@@ -1,4 +1,6 @@
-﻿-- Declare and populate the TVP for the ingredients
+﻿USE [RecipeBook]
+GO
+
 DECLARE @Ingredients dbo.IngredientList;
 DECLARE @InsertedDish INT;
 DECLARE @InsertedMenu INT;
@@ -17,6 +19,7 @@ VALUES
     ('Baicon', 120, 'gr'),
     ('Pimienta Negra Molida', 2, 'gr'),
     ('Nuez Moscada Molida', 1, 'gr');
+
 
 -- create first dish
 EXEC [dbo].[AddNewDish] 
