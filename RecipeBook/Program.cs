@@ -4,8 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Data.Common;
 
-Console.WriteLine("Hello, World!");
-
 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
 
 var baseConnectionString = config.GetConnectionString("RecipeBook");

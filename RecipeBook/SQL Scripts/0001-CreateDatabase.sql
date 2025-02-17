@@ -57,10 +57,9 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Menus')
 BEGIN
     CREATE TABLE Menus (
         id INT PRIMARY KEY IDENTITY(1,1),
-        name NVARCHAR(100) NOT NULL,
+        name NVARCHAR(100) NOT NULL UNIQUE,
         description NVARCHAR(255)
     );
-    CREATE INDEX IX_Menus_name ON Menus(name);
 END
 GO
 
