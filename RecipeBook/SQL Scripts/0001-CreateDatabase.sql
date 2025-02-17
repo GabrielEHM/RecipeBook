@@ -29,10 +29,9 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Ingredients')
 BEGIN
     CREATE TABLE Ingredients (
         id INT PRIMARY KEY IDENTITY(1,1),
-        name NVARCHAR(100) NOT NULL,
+        name NVARCHAR(100) NOT NULL UNIQUE,
         description NVARCHAR(255)
     );
-    CREATE INDEX IX_Ingredients_name ON Ingredients(name);
 END
 GO
 
