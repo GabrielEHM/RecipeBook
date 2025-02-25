@@ -44,7 +44,7 @@ BEGIN
         ingredientId INT NOT NULL,
         quantity DECIMAL(10, 2),
         unit NVARCHAR(50),
-        FOREIGN KEY (dishId) REFERENCES Dishes(id),
+        FOREIGN KEY (dishId) REFERENCES Dishes(id) ON DELETE CASCADE,
         FOREIGN KEY (ingredientId) REFERENCES Ingredients(id)
     );
     CREATE INDEX IX_DishesIngredients_dishId ON DishesIngredients(dishId);
@@ -71,8 +71,8 @@ BEGIN
         menuId INT NOT NULL,
         dishId INT NOT NULL,
         servings INT,
-        FOREIGN KEY (menuId) REFERENCES Menus(id),
-        FOREIGN KEY (dishId) REFERENCES Dishes(id)
+        FOREIGN KEY (menuId) REFERENCES Menus(id) ON DELETE CASCADE,
+        FOREIGN KEY (dishId) REFERENCES Dishes(id) ON DELETE CASCADE
     );
     CREATE INDEX IX_MenuDishes_menuId ON MenuDishes(menuId);
     CREATE INDEX IX_MenuDishes_dishId ON MenuDishes(dishId);
