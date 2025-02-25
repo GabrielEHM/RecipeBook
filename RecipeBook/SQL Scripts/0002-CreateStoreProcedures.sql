@@ -487,3 +487,28 @@ BEGIN
 	SELECT @TotalCount = COUNT(*) FROM [dbo].[Dishes];
 END
 GO
+
+-- =============================================
+-- Author:		Gabriel Hernández
+-- Create date: 24/02/2025
+-- Description:	Creates a shopping list of ingredients based on a menu
+-- =============================================
+CREATE OR ALTER PROCEDURE Menus_GetShoppingList 
+	@menuIds [dbo].[IntList] READONLY
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	DECLARE @dishes TABLE (id INT, servings INT);
+
+	INSERT INTO @dishes (id, servings)
+	SELECT dishId, servings
+	FROM [dbo].[MenuDishes]
+	WHERE menuId IN (SELECT id FROM @menuIds)
+
+	SELECT i.id, i.name, SUM(i.quantity) as quantity, i.unit
+	FROM @dishes d
+	CROSS APPLY [dbo].[GetDishAdjustedIngredients](d.id, d.servings) i
+	GROUP BY i.id, i.name, i.unit
+END
+GO
