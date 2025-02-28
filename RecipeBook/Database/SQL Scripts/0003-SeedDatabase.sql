@@ -22,7 +22,7 @@ VALUES
 
 
 -- create first dish
-EXEC [dbo].[AddNewDish] 
+EXEC [dbo].[Dishes_Add] 
     @IngredientsList = @Ingredients,
     @name = 'Quiche lorraine',
     @description = 'Una tarta salada en base a huevo y crema.',
@@ -52,7 +52,7 @@ VALUES
     ('Patata de guarnicion', 3, 'ud');
 
 -- Create second dish
-EXEC [dbo].[AddNewDish] 
+EXEC [dbo].[Dishes_Add] 
     @IngredientsList = @Ingredients,
     @name = 'Pollo al horno con finas hierbas',
     @description = 'Delicioso pollo al horno con finas hierbas.',
@@ -81,7 +81,7 @@ VALUES
     ('Flor de sal', 3, 'gr');
 
 -- Create second dish
-EXEC [dbo].[AddNewDish] 
+EXEC [dbo].[Dishes_Add] 
     @IngredientsList = @Ingredients,
     @name = 'Galletas con chips de chocolate y sal',
     @description = 'Estas galletas de mantequilla con chips de chocolate y flor de sal harán las delicias de cualquiera.',
@@ -93,7 +93,7 @@ EXEC [dbo].[AddNewDish]
 
 INSERT INTO @InsertedDishes(id, servings) VALUES (@InsertedDish, 40);
 
-EXEC [dbo].[AddNewMenu]
+EXEC [dbo].[Menus_Add]
 	@name = 'Domingo', 
 	@description = 'Plan de comida para los Domingos con tiempo libre.',
 	@DishList = @InsertedDishes,

@@ -1,4 +1,4 @@
-name: RecipeBook
+name: recipe_book
 
 volumes:
   sql-server-data:
@@ -8,6 +8,8 @@ services:
   recipebook:
     image: ${DOCKER_REGISTRY-}recipebook
     container_name: app
+    stdin_open: true
+    tty: true
     build:
       context: .
       dockerfile: RecipeBook/Dockerfile

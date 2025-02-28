@@ -1,80 +1,41 @@
-﻿using Dapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using System.Data.Common;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using RecipeBook.Database;
+using RecipeBook.Database.Repositories;
+using RecipeBook.Models;
+using RecipeBook.Services;
 
-var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
+var services = new ServiceCollection();
 
-var baseConnectionString = config.GetConnectionString("RecipeBook");
+var provider = ConfigureServices(services);
+var dbConnection = provider.GetRequiredService<DatabaseConnection>();
+dbConnection.MigrateDatabase();
 
-// Modify the connection string to connect to the master database
-var masterConnectionString = new SqlConnectionStringBuilder(baseConnectionString)
+var consoleMenuService = provider.GetRequiredService<ConsoleMenuService>();
+
+bool running = true;
+while (running)
 {
-    InitialCatalog = "master"
-}.ConnectionString;
-
-using (var masterConnection = new SqlConnection(masterConnectionString))
-{
-    MigrateDatabase(masterConnection);
-}
-
-var recipeBookConnectionString = new SqlConnectionStringBuilder(baseConnectionString)
-{
-    InitialCatalog = "RecipeBook"
-}.ConnectionString;
-
-using (var connection = new SqlConnection(recipeBookConnectionString))
-{
-    connection.Open();
-    var ingredients = connection.Query("SELECT * FROM Ingredients").ToList();
-
-    foreach (var ingredient in ingredients)
-    {
-        Console.WriteLine(JsonConvert.SerializeObject(ingredient));
-    }
-
-    connection.Close();
-}
-
-void MigrateDatabase(DbConnection connection)
-{
-    try
-    {
-        string[] fileEntries = Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "SQL Scripts"));
-
-        foreach (var scriptPath in fileEntries)
-        {
-            RunSqlFile(connection, scriptPath);
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"An error occurred while creating the database. \n {ex.Message}");
-        throw;
-    }
-}
-
-void RunSqlFile(DbConnection connection, string scriptPath)
-{
-    try
-    {
-        var sqlScript = File.ReadAllText(scriptPath);
-        var commands = sqlScript.Split(["GO"], StringSplitOptions.RemoveEmptyEntries);
-        connection.Open();
-        foreach (var commandText in commands)
-        {
-            using (var command = connection.CreateCommand())
+    consoleMenuService.ShowMenu("Main Menu - What do you want to see?", new CommandList
             {
-                command.CommandText = commandText.Trim();
-                command.ExecuteNonQuery();
-            }
-        }
-        connection.Close();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"An error occurred while running the SQL script. \n {ex.Message}");
-        throw;
-    }
+                { "Ingredients", (_) => provider.GetRequiredService<IngredientsService>().ShowMenu() },
+                //{ "Dishes", (_) => provider.GetRequiredService<DishesService>().ShowMenu() },
+                //{ "Menus", (_) => provider.GetRequiredService<MenusService>().ShowMenu() },
+                { "Exit", (_) => running = false }
+            });
+}
+
+Console.WriteLine("\n👋 Exiting the application. Goodbye!");
+Console.ReadLine();
+static ServiceProvider ConfigureServices(IServiceCollection services)
+{
+    var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true).Build();
+    services.AddSingleton<IConfiguration>(config);
+    services.AddSingleton<DatabaseConnection>();
+    services.AddSingleton<ConsoleMenuService>();
+    services.AddSingleton<DbService>();
+    services.AddTransient<IngredientsRepository>();
+    services.AddTransient<IngredientsService>();
+
+    return services.BuildServiceProvider();
 }
