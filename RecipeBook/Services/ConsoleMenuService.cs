@@ -43,10 +43,9 @@ namespace RecipeBook.Services
                 {
                     table.AddRow(entity.ToTableRow());
                 }
-                table.Write();
-                Console.WriteLine();
-                Console.WriteLine($"\nPage {page.Pagination.Page} of {page.Pagination.PageTotal}");
-                ShowMenu("Options", listOptions);
+                Console.WriteLine(table.ToString());
+                Console.WriteLine($"\nPage {page.Pagination.Page} of {page.Pagination.PageTotal}\n");
+                ShowMenu("Options", listOptions, "Enter your choice: ", false);
             }
         }
     }
