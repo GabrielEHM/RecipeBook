@@ -23,10 +23,30 @@
             }
             else
             {
-                Console.WriteLine("Invalid choice. Press Enter to try again.");
-                Console.ReadLine();
-                return true;
+                return InvalidChoice();
             }
+        }
+
+        public static bool InvalidChoice(string? message = null)
+        {
+            if (message != null)
+            {
+                if (!message.StartsWith(' '))
+                {
+                    message = " " + message;
+                }
+                if (!message.EndsWith('.'))
+                {
+                    message += ".";
+                }
+            }
+            else
+            {
+                message = "";
+            }
+            Console.WriteLine($"Invalid choice.{message} Press Enter to try again.");
+            Console.ReadLine();
+            return true;
         }
 
         private string getValidTrigger(string? trigger, string name)
