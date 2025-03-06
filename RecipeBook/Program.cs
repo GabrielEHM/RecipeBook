@@ -25,7 +25,7 @@ while (running)
             });
 }
 
-Console.WriteLine("\n👋 Exiting the application. Goodbye!");
+Console.WriteLine("\nExiting the application. Goodbye!");
 Console.ReadLine();
 static ServiceProvider ConfigureServices(IServiceCollection services)
 {

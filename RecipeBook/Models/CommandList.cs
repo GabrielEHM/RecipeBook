@@ -23,7 +23,7 @@
             }
             else
             {
-                Console.WriteLine("❌ Invalid choice. Press Enter to try again.");
+                Console.WriteLine("Invalid choice. Press Enter to try again.");
                 Console.ReadLine();
                 return true;
             }

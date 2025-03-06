@@ -3,7 +3,7 @@ using RecipeBook.Models;
 
 namespace RecipeBook.Services
 {
-    class IngredientsService
+    class IngredientsService : Service<Ingredient>
     {
         private readonly IngredientsRepository _ingredientsRepository;
         private readonly ConsoleMenuService _consoleMenuService;
@@ -14,42 +14,41 @@ namespace RecipeBook.Services
             _consoleMenuService = consoleMenuService;
         }
 
-        public bool ShowMenu()
+        public override bool ShowMenu()
         {
-            _consoleMenuService.ShowMenu("Ingredients Menu - What do you want to do?", new CommandList
-                {
-                    { "List all ingredients", (_) => ListAll().Result },
-                    { "Add a new ingredient", (_) => Create() }
-                });
-            return false;
+            bool repeat = true;
+            while (repeat)
+            {
+                repeat = _consoleMenuService.ShowMenu("Ingredients Menu - What do you want to do?", new CommandList
+                    {
+                        { "List all ingredients", (_) => ListAll() },
+                        { "Add a new ingredient", (_) => Add() }
+                    });
+            }
+            return repeat;
         }
 
-        public async Task<bool> ListAll(int page = 1, int pageSize = 10)
+        public override bool ListAll(int page = 1, int pageSize = 10)
         {
-            var listCommands = new CommandList
-                {
-                    { "Last Page", (args) => { return ListAll(page: int.Parse(args[0]), pageSize: int.Parse(args[1])).Result; }, "last" },
-                    { "Next Page", (args) => { return false; }, "next" },
-                    { "Go to Page", (args) => { return ListAll(page: int.Parse(args[0]), pageSize: int.Parse(args[1])).Result; }, "goto" },
-                    { "Add a new ingredient", (_) => Create() , "add"},
-                    { "Details", (args) => GetById(id: int.Parse(args[0])), "detail" },
-                    { "Delete", (args) => Delete(ids: args), "delete" }
-                };
-            await _consoleMenuService.ListEntitiesAsync(_ingredientsRepository.GetAll(page, pageSize), listCommands);
-            return true;
+            bool repeat = true;
+            while (repeat)
+            {
+                repeat = _consoleMenuService.ListEntities(_ingredientsRepository.GetPage(page, pageSize), this);
+            }
+            return repeat;
         }
 
-        private bool GetById(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        private bool Create()
+        public override bool GetById(string id)
         {
             throw new NotImplementedException();
         }
 
-        private bool Delete(string[] ids)
+        public override bool Add(string? id = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Delete(string[] ids)
         {
             throw new NotImplementedException();
         }

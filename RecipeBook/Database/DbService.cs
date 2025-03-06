@@ -64,16 +64,14 @@ namespace RecipeBook.Database
                 using (var connection = _databaseConnection.GetConnection())
                 {
                     DynamicParameters parameters = new DynamicParameters();
-                    parameters.Add("Page", page);
+                    parameters.Add("PageNumber", page);
                     parameters.Add("PageSize", pageSize);
+                    parameters.Add("TotalCount", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
 
-                    using (var results = connection.QueryMultiple(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure))
-                    {
-                        var entities = results.Read<T>().ToList();
-                        var totalItems = results.ReadSingle<int>();
-                        var pageEntities = new Paged<T>(entities, page, pageSize, totalItems);
-                        return pageEntities;
-                    }
+                    var entities = connection.Query<T>(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure).ToList();
+                    var totalItems = parameters.Get<int>("TotalCount");
+                    var pageEntities = new Paged<T>(entities, page, pageSize, totalItems);
+                    return pageEntities;
                 }
             }
             catch (SqlException sqlEx)
