@@ -6,26 +6,11 @@ namespace RecipeBook.Services
     class IngredientsService : Service<Ingredient>
     {
         private readonly IngredientsRepository _ingredientsRepository;
-        private readonly ConsoleMenuService _consoleMenuService;
 
         public IngredientsService(IngredientsRepository ingredientsRepository, ConsoleMenuService consoleMenuService)
+            : base(consoleMenuService)
         {
             _ingredientsRepository = ingredientsRepository;
-            _consoleMenuService = consoleMenuService;
-        }
-
-        public override bool ShowMenu()
-        {
-            bool repeat = true;
-            while (repeat)
-            {
-                repeat = _consoleMenuService.ShowMenu("Ingredients Menu - What do you want to do?", new CommandList
-                    {
-                        { "List all ingredients", (_) => ListAll() },
-                        { "Add a new ingredient", (_) => Add() }
-                    });
-            }
-            return repeat;
         }
 
         public override bool ListAll(int page = 1, int pageSize = 10)
