@@ -8,7 +8,7 @@ namespace RecipeBook.Services
         public bool ShowMenu(string title, CommandList options, string selectionMessage = "Enter your choice: ", bool clear = true)
         {
             if (!options.Any(cmd => cmd.Name.Contains("Exit", StringComparison.OrdinalIgnoreCase)) && !options.Any(cmd => cmd.Name.Contains("Back", StringComparison.OrdinalIgnoreCase)))
-                options.Add("Go Back", (_) => { return false; });
+                options.Add("Go Back", (_) => { return false; }, "back");
 
             if (clear) Console.Clear();
             Console.WriteLine($"=== {title} ===\n");
@@ -43,7 +43,7 @@ namespace RecipeBook.Services
             var listOptions = new CommandList
                 {
                     { "Add a new ingredient", (_) => service.Add() , "add"},
-                    { "Update ingredient <id>", (args) => service.Add(id: args[0]) , "add"},
+                    { "Update ingredient <id>", (args) => service.Add(id: args[0]) , "update"},
                     { "Detail <id>", (args) => service.GetById(id: args[0]), "detail" },
                     { "Delete <id1> [<id2> <...> <idn>]", (args) => service.Delete(ids: args), "delete" }
                 };
