@@ -35,7 +35,9 @@ namespace RecipeBook.Models
         }
         public override string ToString()
         {
-            var result = new StringBuilder($"Id: {Id} Name: {Name}, Description: {Description}");
+            var result = new StringBuilder($"Id: {Id} Name: {Name}");
+            if (Description != null)
+                result.Append($", Description: {Description}");
             if (Quantity != null)
                 result.Append($", Quantity: {Quantity}");
             if (Unit != null)

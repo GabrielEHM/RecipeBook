@@ -1,6 +1,8 @@
-﻿namespace RecipeBook.Models
+﻿using System.Text;
+
+namespace RecipeBook.Models
 {
-    class Dish
+    class Dish : IPageable<Dish>
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -39,6 +41,24 @@
             {
                 throw new ArgumentException("Either PrepTime or CookTime must be provided.");
             }
+        }
+        public static string[] GetTableHeaders()
+        {
+            return ["Id", "Name", "Servings", "PrepTime", "CookTime", "Used in (Menus)"];
+        }
+        public override string ToString()
+        {
+            var result = new StringBuilder($"Id: {Id} Name: {Name}, Servings: {Servings}");
+            if (PrepTime != null)
+                result.Append($", PrepTime: {PrepTime}");
+            if (CookTime != null)
+                result.Append($", CookTime: {CookTime}");
+            result.Append($", Used in (Menus): {UsedIn}");
+            return result.ToString();
+        }
+        public string[] ToTableRow()
+        {
+            return [Id.ToString(), Name, Servings.ToString(), PrepTime?.ToString() ?? "N/A", CookTime?.ToString() ?? "N/A", UsedIn.ToString()];
         }
     }
 }

@@ -19,8 +19,8 @@ while (running)
     consoleMenuService.ShowMenu("Main Menu - What do you want to see?", new CommandList
             {
                 { "Ingredients", (_) => provider.GetRequiredService<IngredientsService>().ShowMenu() },
-                //{ "Dishes", (_) => provider.GetRequiredService<DishesService>().ShowMenu() },
-                //{ "Menus", (_) => provider.GetRequiredService<MenusService>().ShowMenu() },
+                { "Dishes", (_) => provider.GetRequiredService<DishesService>().ShowMenu() },
+                { "Menus", (_) => provider.GetRequiredService<MenusService>().ShowMenu() },
                 { "Exit", (_) => running = false }
             });
 }
@@ -36,6 +36,10 @@ static ServiceProvider ConfigureServices(IServiceCollection services)
     services.AddSingleton<DbService>();
     services.AddTransient<IngredientsRepository>();
     services.AddTransient<IngredientsService>();
+    services.AddTransient<DishesRepository>();
+    services.AddTransient<DishesService>();
+    services.AddTransient<MenusRepository>();
+    services.AddTransient<MenusService>();
 
     return services.BuildServiceProvider();
 }
