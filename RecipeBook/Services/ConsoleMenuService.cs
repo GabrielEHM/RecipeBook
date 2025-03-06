@@ -5,7 +5,7 @@ namespace RecipeBook.Services
 {
     class ConsoleMenuService
     {
-        public bool ShowMenu(string title, CommandList options, string selectionMessage = "Enter your choice: ", bool clear = true)
+        public bool ShowMenu(string title, CommandList options, string selectionMessage = "What do you wish to do? ", bool clear = true)
         {
             if (!options.Any(cmd => cmd.Name.Contains("Exit", StringComparison.OrdinalIgnoreCase)) && !options.Any(cmd => cmd.Name.Contains("Back", StringComparison.OrdinalIgnoreCase)))
                 options.Add("Go Back", (_) => { return false; }, "back");
@@ -19,10 +19,15 @@ namespace RecipeBook.Services
                 index++;
             }
 
+            Console.WriteLine();
+            if (!selectionMessage.EndsWith(' '))
+            {
+                selectionMessage += "";
+            }
             Console.Write(selectionMessage);
             string? input = Console.ReadLine();
-            var verb = input?.Split(" ")[0];
-            var args = input?.Split(" ").Skip(1).ToArray() ?? [];
+            var verb = input?.Split(' ')[0];
+            var args = input?.Split(' ').Skip(1).ToArray() ?? [];
             return options.Run(verb, args);
         }
 
@@ -49,7 +54,14 @@ namespace RecipeBook.Services
                 };
 
             if (page.Pagination.PageTotal > 1)
-                listOptions.Add(new Command("Go to Page <id> [<page_size>]", (args) => { return service.ListAll(page: int.Parse(args[0]), pageSize: args.Length > 1 ? int.Parse(args[1]) : page.Pagination.PageSize); }, "goto"));
+                listOptions.Add(new Command("Go to Page <page_number> [<page_size>]", (args) =>
+                {
+                    if (args.Length == 0) return CommandList.InvalidChoice("You need to provide a page number to jump to");
+                    var pageNumber = int.Parse(args[0]);
+                    var pageSize = args.Length > 1 ? int.Parse(args[1]) : page.Pagination.PageSize;
+                    if (pageNumber < 1 || pageNumber > page.Pagination.PageTotal) return CommandList.InvalidChoice("The page number is out of range");
+                    return service.ListAll(page: pageNumber, pageSize);
+                }, "goto"));
             if (page.Pagination.Page < page.Pagination.PageTotal)
                 listOptions.Add(new Command("Next Page", (args) => { return service.ListAll(page: page.Pagination.Page + 1, pageSize: page.Pagination.PageSize); }, "next"));
             if (page.Pagination.Page > 1)
