@@ -16,7 +16,7 @@ var consoleMenuService = provider.GetRequiredService<ConsoleMenuService>();
 bool running = true;
 while (running)
 {
-    consoleMenuService.ShowMenu("Main Menu - What do you want to see?", new CommandList
+    ConsoleMenuService.ShowMenu("Main Menu - What do you want to see?", new CommandList
             {
                 { "Ingredients", (_) => provider.GetRequiredService<IngredientsService>().ShowMenu() },
                 { "Dishes", (_) => provider.GetRequiredService<DishesService>().ShowMenu() },

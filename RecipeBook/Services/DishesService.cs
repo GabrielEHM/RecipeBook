@@ -7,8 +7,8 @@ namespace RecipeBook.Services
     {
         private readonly DishesRepository _repository;
 
-        public DishesService(DishesRepository dishesRepository, ConsoleMenuService consoleMenuService)
-            : base(consoleMenuService)
+        public DishesService(DishesRepository dishesRepository)
+            : base()
         {
             _repository = dishesRepository;
         }
@@ -18,7 +18,7 @@ namespace RecipeBook.Services
             bool repeat = true;
             while (repeat)
             {
-                repeat = _consoleMenuService.ListEntities(_repository.GetPage(page, pageSize), this);
+                repeat = ConsoleMenuService.ListEntities(_repository.GetPage(page, pageSize), this);
             }
             return repeat;
         }

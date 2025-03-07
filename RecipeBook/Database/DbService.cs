@@ -1,17 +1,13 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using RecipeBook.Database.Types;
 using RecipeBook.Models;
 
 namespace RecipeBook.Database
 {
-    class DbService
+    class DbService(DatabaseConnection databaseConnection)
     {
-        private readonly DatabaseConnection _databaseConnection;
-
-        public DbService(DatabaseConnection databaseConnection)
-        {
-            _databaseConnection = databaseConnection;
-        }
+        private readonly DatabaseConnection _databaseConnection = databaseConnection;
 
         public async IAsyncEnumerable<Paged<T>> GetAll<T>(string procedureName, int pageSize = 10, int startPage = 1) where T : IPageable<T>
         {
@@ -72,6 +68,73 @@ namespace RecipeBook.Database
                     var totalItems = parameters.Get<int>("TotalCount");
                     var pageEntities = new Paged<T>(entities, page, pageSize, totalItems);
                     return pageEntities;
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL error occurred: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
+        public bool ConstrainedRemove(string procedureName, int id)
+        {
+            try
+            {
+                using (var connection = _databaseConnection.GetConnection())
+                {
+                    
+                    return connection.QuerySingle<bool>(procedureName, new { id }, commandType: System.Data.CommandType.StoredProcedure);
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL error occurred: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
+        public void Remove(string procedureName, int id)
+        {
+            try
+            {
+                using (var connection = _databaseConnection.GetConnection())
+                {
+                    connection.Execute(procedureName, new { id }, commandType: System.Data.CommandType.StoredProcedure);
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL error occurred: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
+        public void BulkRemove(string procedureName, int[] ids)
+        {
+            try
+            {
+                using (var connection = _databaseConnection.GetConnection())
+                {
+                    var intList = new IntList(ids);
+                    var parameters = new DynamicParameters();
+                    parameters.Add("ids", intList.AsTableValuedParameter("dbo.IntList"));
+                    connection.Execute(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure);
                 }
             }
             catch (SqlException sqlEx)

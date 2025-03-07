@@ -20,5 +20,10 @@ namespace RecipeBook.Database.Repositories
         {
             return _dbService.GetPage<Ingredient>("Ingredients_GetAll", page, pageSize);
         }
+
+        public bool Remove(int id)
+        {
+            return _dbService.ConstrainedRemove("Ingredients_Remove", id);
+        }
     }
 }

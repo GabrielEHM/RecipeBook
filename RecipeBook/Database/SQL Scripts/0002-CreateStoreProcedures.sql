@@ -209,13 +209,13 @@ BEGIN
 
     BEGIN TRY
         DELETE FROM Ingredients WHERE Id = @id;
-        RETURN 1;
+        SELECT 1;
     END TRY
     BEGIN CATCH
         -- Check if the error is due to foreign key constraint
         IF ERROR_NUMBER() = 547 -- FK violation error number
         BEGIN
-            RETURN 0; -- Indicates FK constraint violation
+            SELECT 0; -- Indicates FK constraint violation
         END
         ELSE
         BEGIN

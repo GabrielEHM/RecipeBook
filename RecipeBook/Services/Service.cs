@@ -3,15 +3,14 @@ using RecipeBook.Models;
 
 namespace RecipeBook.Services
 {
-    abstract class Service<T>(ConsoleMenuService consoleMenuService)
+    abstract class Service<T>
     {
-        protected readonly ConsoleMenuService _consoleMenuService = consoleMenuService;
         public virtual bool ShowMenu()
         {
             bool repeat = true;
             while (repeat)
             {
-                repeat = _consoleMenuService.ShowMenu($"{typeof(T).Name.Pluralize()} - What do you want to do?", new CommandList
+                repeat = ConsoleMenuService.ShowMenu($"{typeof(T).Name.Pluralize()} - What do you want to do?", new CommandList
                         {
                             { $"List all {typeof(T).Name.ToLower().Pluralize()}", (_) => ListAll() },
                             { $"Add a new {typeof(T).Name.ToLower()}", (_) => Add() }

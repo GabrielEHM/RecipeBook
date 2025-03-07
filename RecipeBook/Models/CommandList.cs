@@ -27,7 +27,7 @@
             }
         }
 
-        public static bool InvalidChoice(string? message = null)
+        public static bool InvalidChoice(string? message = null, string? errorMessage = null)
         {
             if (message != null)
             {
@@ -43,6 +43,14 @@
             else
             {
                 message = "";
+            }
+            if (errorMessage != null)
+            {
+                if (!message.EndsWith('.'))
+                {
+                    message += ".";
+                }
+                Console.WriteLine($"Error: {errorMessage}");
             }
             Console.WriteLine($"Invalid choice.{message} Press Enter to try again.");
             Console.ReadLine();

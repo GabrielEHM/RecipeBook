@@ -1,11 +1,14 @@
 ﻿using ConsoleTables;
+using Humanizer;
 using RecipeBook.Models;
+using System.Diagnostics.Metrics;
+using System.Diagnostics;
 
 namespace RecipeBook.Services
 {
     class ConsoleMenuService
     {
-        public bool ShowMenu(string title, CommandList options, string selectionMessage = "What do you wish to do? ", bool clear = true)
+        public static bool ShowMenu(string title, CommandList options, string selectionMessage = "What do you wish to do? ", bool clear = true)
         {
             if (!options.Any(cmd => cmd.Name.Contains("Exit", StringComparison.OrdinalIgnoreCase)) && !options.Any(cmd => cmd.Name.Contains("Back", StringComparison.OrdinalIgnoreCase)))
                 options.Add("Go Back", (_) => { return false; }, "back");
@@ -31,7 +34,7 @@ namespace RecipeBook.Services
             return options.Run(verb, args);
         }
 
-        public bool ListEntities<T>(Paged<T> page, Service<T> service) where T : IPageable<T>
+        public static bool ListEntities<T>(Paged<T> page, Service<T> service) where T : IPageable<T>
         {
 
             Console.Clear();
@@ -68,6 +71,43 @@ namespace RecipeBook.Services
                 listOptions.Add(new Command("Previous Page", (args) => { return service.ListAll(page: page.Pagination.Page - 1, pageSize: page.Pagination.PageSize); }, "prev"));
 
             return ShowMenu("Options", listOptions, "Enter your choice: ", false);
+        }
+
+        public static bool Confirm(string message)
+        {
+            Console.WriteLine(message);
+            Console.Write("Are you sure? (Y/N): ");
+            var response = Console.ReadLine();
+            return response?.ToLower() == "y" || response?.ToLower() == "yes";
+        }
+
+        private static void ShowMessage(string message, bool error = false)
+        {
+            if (!message.EndsWith('.'))
+            {
+                message += ".";
+            }
+            Console.WriteLine($"{(error ? "Error: " : "")}{message}");
+        }
+
+        public static void ShowMessage(params string[] messages)
+        {
+            foreach (var message in messages)
+            {
+                ShowMessage(message, false);
+            }
+            Console.WriteLine("Press enter to continue.");
+            Console.ReadLine();
+        }
+
+        public static void ShowError(params string[] messages)
+        {
+            foreach (var message in messages)
+            {
+                ShowMessage(message, true);
+            }
+            Console.WriteLine("Press enter to continue.");
+            Console.ReadLine();
         }
     }
 }
