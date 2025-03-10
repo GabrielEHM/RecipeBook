@@ -267,7 +267,7 @@ BEGIN
     IF @PageNumber < 1 SET @PageNumber = 1;
     IF @PageSize < 1 SET @PageSize = 10;
 
-    SELECT i.id, name, description, COUNT(DISTINCT di.dishId) AS 'Used in (Dishes)'
+    SELECT i.id, name, description, COUNT(DISTINCT di.dishId) AS 'usedIn'
     FROM [dbo].[Ingredients] i
 	LEFT JOIN [dbo].[DishesIngredients] di
 		ON i.id = di.ingredientId
@@ -419,9 +419,9 @@ BEGIN
 		  ,d.name
 		  ,d.description
 		  ,d.servings
-		  ,d.prep_time
-		  ,d.cook_time
-		  ,COUNT(DISTINCT mi.menuId) AS 'Used in (Menus)'
+		  ,d.prep_time AS 'prepTime'
+		  ,d.cook_time AS 'cookTime'
+		  ,COUNT(DISTINCT mi.menuId) AS 'usedIn'
     FROM [dbo].[Dishes] d
 	LEFT JOIN [dbo].[MenuDishes] mi
 		ON d.id = mi.dishId
@@ -475,7 +475,7 @@ BEGIN
     SELECT m.id
 		  ,m.name
 		  ,m.description
-		  ,COUNT(mi.dishId) AS 'Dishes in menu'
+		  ,COUNT(mi.dishId) AS 'dishCount'
     FROM [dbo].[Menus] m
 	LEFT JOIN [dbo].[MenuDishes] mi
 		ON m.id = mi.menuId

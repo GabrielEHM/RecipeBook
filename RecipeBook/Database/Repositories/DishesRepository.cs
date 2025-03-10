@@ -20,5 +20,17 @@ namespace RecipeBook.Database.Repositories
         {
             return _dbService.GetPage<Dish>("Dishes_GetAll", page, pageSize);
         }
+
+        public void Remove(int[] ids)
+        {
+            if (ids.Length == 1)
+            {
+                _dbService.Remove("Dishes_Remove", ids[0]);
+            }
+            else
+            {
+                _dbService.BulkRemove("Dishes_BulkRemove", ids);
+            }
+        }
     }
 }

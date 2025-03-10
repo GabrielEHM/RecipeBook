@@ -78,7 +78,7 @@ namespace RecipeBook.Services
             Console.WriteLine(message);
             Console.Write("Are you sure? (Y/N): ");
             var response = Console.ReadLine();
-            return response?.ToLower() == "y" || response?.ToLower() == "yes";
+            return response is not null && (response.Equals("y", StringComparison.OrdinalIgnoreCase) || response.Equals("yes", StringComparison.OrdinalIgnoreCase));
         }
 
         private static void ShowMessage(string message, bool error = false)

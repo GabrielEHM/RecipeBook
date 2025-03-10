@@ -1,4 +1,5 @@
-﻿using RecipeBook.Database.Repositories;
+﻿using Humanizer;
+using RecipeBook.Database.Repositories;
 using RecipeBook.Models;
 
 namespace RecipeBook.Services
@@ -35,7 +36,26 @@ namespace RecipeBook.Services
 
         public override bool Delete(string[] ids)
         {
-            throw new NotImplementedException();
+            try
+            {
+                int[] convertedIds = Array.ConvertAll(ids, int.Parse);
+                if (!ConsoleMenuService.Confirm($"You are about to attempt to delete the following Menus: {convertedIds.Humanize()}"))
+                {
+                    return true;
+                }
+                _repository.Remove(convertedIds);
+                ConsoleMenuService.ShowMessage($"The Menus {convertedIds.Humanize()} were deleted successfully.");
+                return true;
+            }
+            catch (FormatException ex)
+            {
+                return CommandList.InvalidChoice("One or more if the provided ids are not valid integers.", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                ConsoleMenuService.ShowError($"An error occurred while deleting the Menus. {ex.Message}");
+                return true;
+            }
         }
     }
 }

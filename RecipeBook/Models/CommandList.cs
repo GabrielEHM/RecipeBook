@@ -16,7 +16,7 @@
 
         public bool Run(string? commandTrigger, params String[] args)
         {
-            var command = this.FirstOrDefault(cmd => cmd.Trigger == commandTrigger || cmd.Name == commandTrigger);
+            var command = this.FirstOrDefault(cmd => cmd.Trigger.Equals(commandTrigger, StringComparison.OrdinalIgnoreCase) || cmd.Name.Equals(commandTrigger, StringComparison.OrdinalIgnoreCase));
             if (command != null && commandTrigger != null)
             {
                 return command.CallBack.Invoke(args);
@@ -29,7 +29,7 @@
 
         public static bool InvalidChoice(string? message = null, string? errorMessage = null)
         {
-            if (message != null)
+            if (message is not null)
             {
                 if (!message.StartsWith(' '))
                 {
@@ -44,7 +44,7 @@
             {
                 message = "";
             }
-            if (errorMessage != null)
+            if (errorMessage is not null)
             {
                 if (!message.EndsWith('.'))
                 {
@@ -66,13 +66,13 @@
             }
             for (int i = 1; i < name.Length; i++)
             {
-                if (!this.Any(cmd => cmd.Trigger == proposedTrigger))
+                if (!this.Any(cmd => string.Equals(cmd.Trigger, proposedTrigger, StringComparison.OrdinalIgnoreCase)))
                 {
                     break;
                 }
                 proposedTrigger = name.Substring(0, i).ToLower();
             }
-            if (this.Any(cmd => cmd.Trigger == proposedTrigger))
+            if (this.Any(cmd => string.Equals(cmd.Trigger, proposedTrigger, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new ArgumentException($"We were unable to find a unique trigger for the '{name}' command.");
             }
