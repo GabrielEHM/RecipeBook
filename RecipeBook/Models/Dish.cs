@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using RecipeBook.Database.Types;
 using System.Text;
 
 namespace RecipeBook.Models
@@ -32,7 +33,17 @@ namespace RecipeBook.Models
         }
         public override DynamicParameters ToDynamicParameters()
         {
-            throw new NotImplementedException();
+            var parameters = base.ToDynamicParameters();
+            parameters.Add("servings", Servings);
+            parameters.Add("prepTime", PrepTime);
+            parameters.Add("cookTime", CookTime);
+            parameters.Add("recipe", Recipe);
+            if (Ingredients is not null)
+            {
+                var ingredientList = new IngredientList(Ingredients);
+                parameters.Add("IngredientsList", ingredientList.AsTableValuedParameter("dbo.IngredientList"));
+            }
+            return parameters;
         }
         public static string[] GetTableHeaders()
         {

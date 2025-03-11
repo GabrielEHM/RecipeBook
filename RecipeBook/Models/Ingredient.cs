@@ -27,10 +27,6 @@ namespace RecipeBook.Models
                 }
             }
         }
-        public override DynamicParameters ToDynamicParameters()
-        {
-            throw new NotImplementedException();
-        }
         public static string[] GetTableHeaders()
         {
             return ["Id", "Name", "Description", "Used in (Dishes)"];
