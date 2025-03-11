@@ -90,10 +90,37 @@ namespace RecipeBook.Database
                 {
                     var parameters = new DynamicParameters();
                     parameters.Add("id", id);
-                    connection.QueryMultiple(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure);
                     using (var results = connection.QueryMultiple(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure))
                     {
                         var entity = Storable.FromReader<T>(results);
+                        return entity;
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL error occurred: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
+        public Dish? GetById(string procedureName, int id, int? servings = null)
+        {
+            try
+            {
+                using (var connection = _databaseConnection.GetConnection())
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("id", id);
+                    parameters.Add("servings", servings);
+                    using (var results = connection.QueryMultiple(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure))
+                    {
+                        var entity = Storable.FromReader<Dish>(results);
                         return entity;
                     }
                 }
