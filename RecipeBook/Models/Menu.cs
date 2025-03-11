@@ -1,12 +1,10 @@
-﻿using System.Text;
+﻿using Dapper;
+using System.Text;
 
 namespace RecipeBook.Models
 {
-    class Menu : IPageable<Menu>
+    class Menu : Storable, IPageable
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string? Description { get; set; }
         public List<Dish> Dishes { get; set; } = new List<Dish>();
         private int _dishCount;
         public int DishCount
@@ -26,6 +24,10 @@ namespace RecipeBook.Models
                     throw new InvalidOperationException("Cannot set DishCount directly when Dishes list is not empty.");
                 }
             }
+        }
+        public override DynamicParameters ToDynamicParameters()
+        {
+            throw new NotImplementedException();
         }
         public static string[] GetTableHeaders()
         {

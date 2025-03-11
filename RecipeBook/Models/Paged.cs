@@ -1,6 +1,6 @@
 namespace RecipeBook.Models
 {
-    public class Paged<T> where T : IPageable<T>
+    public class Paged<T> where T : IPageable
     {
         public List<T> Entities { get; set; }
         public PaginationInfo Pagination { get; set; }

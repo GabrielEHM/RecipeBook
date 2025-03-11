@@ -9,7 +9,7 @@ namespace RecipeBook.Database
     {
         private readonly DatabaseConnection _databaseConnection = databaseConnection;
 
-        public async IAsyncEnumerable<Paged<T>> GetAll<T>(string procedureName, int pageSize = 10, int startPage = 1) where T : IPageable<T>
+        public async IAsyncEnumerable<Paged<T>> GetAll<T>(string procedureName, int pageSize = 10, int startPage = 1) where T : IPageable
         {
             int page = startPage;
             while (true)
@@ -53,7 +53,7 @@ namespace RecipeBook.Database
             }
         }
 
-        public Paged<T> GetPage<T>(string procedureName, int page, int pageSize = 10) where T : IPageable<T>
+        public Paged<T> GetPage<T>(string procedureName, int page, int pageSize = 10) where T : IPageable
         {
             try
             {
@@ -68,6 +68,35 @@ namespace RecipeBook.Database
                     var totalItems = parameters.Get<int>("TotalCount");
                     var pageEntities = new Paged<T>(entities, page, pageSize, totalItems);
                     return pageEntities;
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL error occurred: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <returns>
+        /// The id of the created or updated entity.
+        /// </returns>
+        public int CreateOrUpdate<T>(string procedureName, T entity) where T : Storable
+        {
+            try
+            {
+                using (var connection = _databaseConnection.GetConnection())
+                {
+                    var parameters = entity.ToDynamicParameters();
+                    parameters.Add("insertedId", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
+
+                    connection.Execute(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure);
+                    var insertedEntityId = parameters.Get<int>("TotalCount");
+                    return insertedEntityId;
                 }
             }
             catch (SqlException sqlEx)

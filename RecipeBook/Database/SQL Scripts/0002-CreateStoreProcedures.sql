@@ -23,13 +23,13 @@ GO
 -- =============================================
 CREATE OR ALTER PROCEDURE [dbo].[Dishes_Add]
 	@name nvarchar(100), 
-	@description nvarchar(255),
+	@description nvarchar(255) = NULL,
 	@servings int,
 	@prep_time int,
 	@cook_time int,
 	@recipe nvarchar(MAX),
 	@IngredientsList dbo.IngredientList READONLY,
-	@InsertedDish INT OUTPUT
+	@insertedId INT OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -69,12 +69,12 @@ BEGIN
 			VALUES (source.name, source.description, source.prep_time, source.cook_time, source.servings, source.recipe)
 		OUTPUT inserted.id, inserted.name INTO @InsertedDishes;
 
-		SELECT @InsertedDish = id
+		SELECT @insertedId = id
 		FROM @InsertedDishes;
 
 		MERGE INTO [dbo].[DishesIngredients] AS target
 		USING (
-			SELECT @InsertedDish, i.id AS ingredientId, v.quantity, v.unit
+			SELECT @insertedId AS dishId, i.id AS ingredientId, v.quantity, v.unit
 			FROM @IngredientsList AS v
 			JOIN @InsertedIngredients i ON i.name = v.name
 		) AS source (dishId, ingredientId, quantity, unit)
@@ -115,9 +115,9 @@ GO
 -- =============================================
 CREATE OR ALTER PROCEDURE [dbo].[Menus_Add]
 	@name nvarchar(100), 
-	@description nvarchar(255),
+	@description nvarchar(255) = NULL,
 	@DishList dbo.DishList READONLY,
-	@InsertedMenu INT OUTPUT
+	@insertedId INT OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -140,12 +140,12 @@ BEGIN
 			VALUES (source.name, source.description)
 		OUTPUT inserted.id INTO @InsertedMenus;
 
-		SELECT @InsertedMenu = id
+		SELECT @insertedId = id
 		FROM @InsertedMenus;
 
 		MERGE INTO [dbo].[MenuDishes] AS target
 		USING (
-			SELECT @InsertedMenu as menuId, d.id AS dishId, d.servings
+			SELECT @insertedId as menuId, d.id AS dishId, d.servings
 			FROM @DishList AS d
 		) AS source (menuId, dishId, servings)
 		ON target.dishId = source.dishId AND target.menuId = source.menuId
@@ -173,10 +173,13 @@ GO
 -- =============================================
 CREATE OR ALTER PROCEDURE [dbo].[Ingredients_Add] 
 	@name NVARCHAR(100), 
-	@description NVARCHAR(255)
+	@description NVARCHAR(255),
+	@insertedId INT OUTPUT
 AS
 BEGIN
 	SET NOCOUNT ON;
+
+    DECLARE @InsertedIngredients TABLE (id INT);
 
 	MERGE INTO [dbo].[Ingredients] AS target
 		USING (VALUES (@name, @description)) AS source (name, description)
@@ -187,8 +190,10 @@ BEGIN
 		WHEN NOT MATCHED THEN
 			INSERT ([name], [description])  -- Only insert name and description
 			VALUES (source.name, source.description)
-		OUTPUT 
-			inserted.id, inserted.name;
+		OUTPUT inserted.id INTO @InsertedIngredients;
+
+	SELECT @insertedId = id
+		FROM @InsertedIngredients;
 END
 GO
 

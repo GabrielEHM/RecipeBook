@@ -10,14 +10,14 @@ namespace RecipeBook.Database.Types
 {
     class IntListRow : SqlDataRecord
     {
-        public int id { get; set; }
+        public int Id { get; set; }
     }
     class IntList : List<IntListRow>
     {
         public IntList(int[] ids) {
             foreach (int id in ids)
             {
-                this.Add(new IntListRow { id = id });
+                this.Add(new IntListRow { Id = id });
             }
         }
     }

@@ -34,7 +34,7 @@ namespace RecipeBook.Services
             return options.Run(verb, args);
         }
 
-        public static bool ListEntities<T>(Paged<T> page, Service<T> service) where T : IPageable<T>
+        public static bool ListEntities<T>(Paged<T> page, Service<T> service) where T : IPageable
         {
 
             Console.Clear();

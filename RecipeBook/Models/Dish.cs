@@ -1,12 +1,10 @@
-﻿using System.Text;
+﻿using Dapper;
+using System.Text;
 
 namespace RecipeBook.Models
 {
-    class Dish : IPageable<Dish>
+    class Dish : Storable, IPageable
     {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public string? Description { get; set; }
         public int Servings { get; set; }
         public int? PrepTime { get; set; }
         public int? CookTime { get; set; }
@@ -31,6 +29,10 @@ namespace RecipeBook.Models
                     throw new InvalidOperationException("Cannot set UsedIn directly when Menus list is not empty.");
                 }
             }
+        }
+        public override DynamicParameters ToDynamicParameters()
+        {
+            throw new NotImplementedException();
         }
         public static string[] GetTableHeaders()
         {
