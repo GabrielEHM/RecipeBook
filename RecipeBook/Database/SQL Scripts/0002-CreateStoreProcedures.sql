@@ -498,7 +498,7 @@ GO
 -- Create date: 24/02/2025
 -- Description:	Creates a shopping list of ingredients based on a menu
 -- =============================================
-CREATE OR ALTER PROCEDURE Menus_GetShoppingList 
+CREATE OR ALTER PROCEDURE [dbo].[Menus_GetShoppingList] 
 	@menuIds [dbo].[IntList] READONLY
 AS
 BEGIN

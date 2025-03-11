@@ -24,7 +24,10 @@ namespace RecipeBook.Database.Repositories
         {
             return _dbService.GetPage<T>($"{typeof(T).Name.Pluralize()}_GetAll", page, pageSize);
         }
-
+        public virtual T? GetById(int id)
+        {
+            return _dbService.GetById<T>($"{typeof(T).Name.Pluralize()}_GetById", id);
+        }
         public virtual int CreateOrUpdate(T entity)
         {
             return _dbService.CreateOrUpdate($"{typeof(T).Name.Pluralize()}_Add", entity);

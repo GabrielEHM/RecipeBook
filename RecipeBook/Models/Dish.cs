@@ -63,5 +63,10 @@ namespace RecipeBook.Models
         {
             return [Id.ToString(), Name, Servings.ToString(), PrepTime?.ToString() ?? "N/A", CookTime?.ToString() ?? "N/A", UsedIn.ToString()];
         }
+        protected override void FromReader(SqlMapper.GridReader reader)
+        {
+            Ingredients = reader.Read<Ingredient>().ToList();
+            Menus = reader.Read<Menu>().ToList();
+        }
     }
 }

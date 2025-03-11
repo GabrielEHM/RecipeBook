@@ -82,6 +82,34 @@ namespace RecipeBook.Database
             }
         }
 
+        public T? GetById<T>(string procedureName, int id) where T : Storable
+        {
+            try
+            {
+                using (var connection = _databaseConnection.GetConnection())
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("id", id);
+                    connection.QueryMultiple(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure);
+                    using (var results = connection.QueryMultiple(procedureName, parameters, commandType: System.Data.CommandType.StoredProcedure))
+                    {
+                        var entity = Storable.FromReader<T>(results);
+                        return entity;
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"SQL error occurred: {sqlEx.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw;
+            }
+        }
+
         /// <returns>
         /// The id of the created or updated entity.
         /// </returns>

@@ -2,7 +2,7 @@
 
 namespace RecipeBook.Models
 {
-    class Storable
+    abstract class Storable
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
@@ -13,6 +13,14 @@ namespace RecipeBook.Models
             parameters.Add("Name", Name);
             parameters.Add("Description", Description);
             return parameters;
+        }
+        protected abstract void FromReader(SqlMapper.GridReader reader);
+        public static T? FromReader<T>(SqlMapper.GridReader reader) where T : Storable
+        {
+            var entity = reader.ReadSingleOrDefault<T>();
+            if (entity is null) return null;
+            entity.FromReader(reader);
+            return entity;
         }
     }
 }
