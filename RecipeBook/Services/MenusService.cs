@@ -9,26 +9,9 @@ namespace RecipeBook.Services
         private readonly MenusRepository _repository;
 
         public MenusService(MenusRepository menusRepository)
-            : base()
+            : base(menusRepository)
         {
-            _repository = menusRepository;
-        }
-
-        public override bool ListAll(CommandAction back, int page = 1, int pageSize = 10)
-        {
-            bool repeat = true;
-            var backCommand = new Command("Go Back", (_) => { repeat = false; return back(); }, "back");
-            bool ret = true;
-            while (repeat)
-            {
-                ret = ConsoleMenuService.ListEntities(_repository.GetPage(page, pageSize), this, backCommand);
-            }
-            return ret;
-        }
-
-        public override bool GetById(string id, CommandAction back)
-        {
-            throw new NotImplementedException();
+            _repository = (MenusRepository)repository;
         }
 
         public override bool Add(string? id = null)

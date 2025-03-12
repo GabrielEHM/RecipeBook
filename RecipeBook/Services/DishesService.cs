@@ -9,26 +9,45 @@ namespace RecipeBook.Services
         private readonly DishesRepository _repository;
 
         public DishesService(DishesRepository dishesRepository)
-            : base()
+            : base(dishesRepository)
         {
-            _repository = dishesRepository;
+            _repository = (DishesRepository)repository;
         }
 
-        public override bool ListAll(CommandAction back, int page = 1, int pageSize = 10)
+        public bool GetById(string id, string servings, CommandAction back)
         {
-            bool repeat = true;
-            var backCommand = new Command("Go Back", (_) => { repeat = false; return back(); }, "back");
-            bool ret = true;
-            while (repeat)
+            try
             {
-                ret = ConsoleMenuService.ListEntities(_repository.GetPage(page, pageSize), this, backCommand);
+                int parsedId = int.Parse(id);
+                int parsedServings = int.Parse(servings);
+                var entity = _repository.GetById(parsedId, parsedServings);
+                if (entity is null)
+                {
+                    return CommandList.InvalidChoice($"The dish with id {id} does not exist.");
+                }
+                bool repeat = true;
+                var options = new CommandList()
+                {
+                    { $"Update", (_) => Add(id) },
+                    { $"Delete", (_) => Delete([id]) },
+                    { "Back", (_) => { repeat = false; return back(); } }
+                };
+                bool ret = true;
+                while (repeat)
+                {
+                    ret = ConsoleMenuService.DetailEntity(entity, options);
+                }
+                return ret;
             }
-            return ret;
-        }
-
-        public override bool GetById(string id, CommandAction back)
-        {
-            throw new NotImplementedException();
+            catch (FormatException ex)
+            {
+                return CommandList.InvalidChoice("One or more of the provided ids are not valid integers.", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                ConsoleMenuService.ShowError($"An error occurred while processing the request. {ex.Message}");
+                return true;
+            }
         }
 
         public override bool Add(string? id = null)
