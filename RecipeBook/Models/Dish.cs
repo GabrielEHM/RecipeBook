@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using ConsoleTables;
+using Dapper;
 using RecipeBook.Database.Types;
 using System.Text;
 
@@ -49,15 +50,52 @@ namespace RecipeBook.Models
         {
             return ["Id", "Name", "Servings", "PrepTime", "CookTime", "Used in (Menus)"];
         }
+        public string ToDetailedString(bool detailed = true, bool inline = false)
+        {
+            var result = new StringBuilder($"Id: {Id}");
+            StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.Append(text + Environment.NewLine);
+            Append($"Name: {Name}");
+            if (Description != null && detailed)
+                Append($"Description: {Description}");
+            Append($"Servings: {Servings}");
+            if (PrepTime != null)
+                Append($"Preparation time: {PrepTime}");
+            if (CookTime != null)
+                Append($"Cook time: {CookTime}");
+            if (detailed && Ingredients?.Count > 0)
+            {
+                var table = new ConsoleTable(Ingredient.GetTableHeaders());
+                foreach (var ingredient in Ingredients)
+                {
+                    table.AddRow(ingredient.ToTableRow());
+                }
+                result.AppendLine();
+                result.AppendLine($"=== Ingredients ===");
+                result.AppendLine();
+                result.AppendLine(table.ToString());
+            }
+            if (detailed && UsedIn > 0)
+            {
+                var table = new ConsoleTable(Menu.GetTableHeaders());
+                foreach (var menu in Menus)
+                {
+                    table.AddRow(menu.ToTableRow());
+                }
+                result.AppendLine();
+                result.AppendLine($"=== Menus used in ===");
+                result.AppendLine();
+                result.AppendLine(table.ToString());
+
+            }
+            else
+            {
+                Append($"Menus used in: {UsedIn}");
+            }
+            return result.ToString();
+        }
         public override string ToString()
         {
-            var result = new StringBuilder($"Id: {Id} Name: {Name}, Servings: {Servings}");
-            if (PrepTime != null)
-                result.Append($", PrepTime: {PrepTime}");
-            if (CookTime != null)
-                result.Append($", CookTime: {CookTime}");
-            result.Append($", Used in (Menus): {UsedIn}");
-            return result.ToString();
+            return ToDetailedString();
         }
         public string[] ToTableRow()
         {

@@ -1,4 +1,5 @@
-﻿using Humanizer;
+﻿using Azure;
+using Humanizer;
 using RecipeBook.Database.Repositories;
 using RecipeBook.Models;
 
@@ -6,27 +7,59 @@ namespace RecipeBook.Services
 {
     class IngredientsService : Service<Ingredient>
     {
-        private readonly IngredientsRepository _ingredientsRepository;
+        private readonly IngredientsRepository _repository;
 
         public IngredientsService(IngredientsRepository ingredientsRepository)
             : base()
         {
-            _ingredientsRepository = ingredientsRepository;
+            _repository = ingredientsRepository;
         }
 
-        public override bool ListAll(int page = 1, int pageSize = 10)
+        public override bool ListAll(CommandAction back, int page = 1, int pageSize = 10)
         {
             bool repeat = true;
-            while (repeat)
+            var backCommand = new Command("Back", (_) => { repeat = false; return back(); }, "back");
+            bool ret = true;
+            while (repeat && ret)
             {
-                repeat = ConsoleMenuService.ListEntities(_ingredientsRepository.GetPage(page, pageSize), this);
+                ret = ConsoleMenuService.ListEntities(_repository.GetPage(page, pageSize), this, backCommand);
             }
-            return repeat;
+            return ret;
         }
 
-        public override bool GetById(string id)
+        public override bool GetById(string id, CommandAction back)
         {
-            throw new NotImplementedException();
+            try
+            {
+                int parsedId = int.Parse(id);
+                var ingredient = _repository.GetById(parsedId);
+                if (ingredient is null)
+                {
+                    return CommandList.InvalidChoice($"The ingredient with id {id} does not exist.");
+                }
+                bool repeat = true;
+                var options = new CommandList()
+                {
+                    { "Update ingredient", (_) => Add(id) },
+                    { "Delete ingredient", (_) => Delete(new string[] { id }) },
+                    { "Back", (_) => { repeat = false; return back(); } }
+                };
+                bool ret = true;
+                while (repeat)
+                {
+                    ret = ConsoleMenuService.DetailEntity(ingredient, options);
+                }
+                return ret;
+            }
+            catch (FormatException ex)
+            {
+                return CommandList.InvalidChoice("One or more if the provided ids are not valid integers.", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                ConsoleMenuService.ShowError($"An error occurred while deleting the ingredients. {ex.Message}");
+                return true;
+            }
         }
 
         public override bool Add(string? id = null)
@@ -46,7 +79,7 @@ namespace RecipeBook.Services
                 }
                 foreach (int id in convertedIds)
                 {
-                    results.Add(id, _ingredientsRepository.Remove(id));
+                    results.Add(id, _repository.Remove(id));
                 }
                 var deleted = results.Where(r => r.Value).Select(r => r.Key).ToArray();
                 var used = results.Where(r => !r.Value).Select(r => r.Key).ToArray();

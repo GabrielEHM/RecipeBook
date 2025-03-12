@@ -27,6 +27,15 @@
             }
         }
 
+        public static bool ValidateArgs(string[] args, int required, string? errorMessage = "You need to provide all required parameters")
+        {
+            if (args.Length < required)
+            {
+                return !InvalidChoice(errorMessage);
+            }
+            return true;
+        }
+
         public static bool InvalidChoice(string? message = null, string? errorMessage = null)
         {
             if (message is not null)
@@ -77,6 +86,15 @@
                 throw new ArgumentException($"We were unable to find a unique trigger for the '{name}' command.");
             }
             return proposedTrigger;
+        }
+
+        public static CommandAction GoBack()
+        {
+            return (_) => { return true; };
+        }
+        public static CommandAction DeepGoBack()
+        {
+            return (_) => { return false; };
         }
     }
 }

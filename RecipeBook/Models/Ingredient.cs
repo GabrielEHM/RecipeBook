@@ -1,4 +1,7 @@
-﻿using Dapper;
+﻿using Azure;
+using ConsoleTables;
+using Dapper;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace RecipeBook.Models
@@ -31,17 +34,39 @@ namespace RecipeBook.Models
         {
             return ["Id", "Name", "Description", "Used in (Dishes)"];
         }
+        public string ToDetailedString(bool detailed = true, bool inline = false)
+        {
+            var result = new StringBuilder($"Id: {Id}");
+            StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.AppendLine(text);
+            Append($"Name: {Name}");
+            if (Description != null)
+                Append($"Description: {Description}");
+            if (Quantity != null)
+                Append($"Quantity: {Quantity}");
+            if (Unit != null)
+                Append($"Unit: {Unit}");
+            if (detailed && UsedIn > 0)
+            {
+                var table = new ConsoleTable(Dish.GetTableHeaders());
+                foreach (var dish in Dishes)
+                {
+                    table.AddRow(dish.ToTableRow());
+                }
+                result.AppendLine();
+                result.AppendLine($"=== Dishes used in ===");
+                result.AppendLine();
+                result.AppendLine(table.ToString());
+
+            } 
+            else
+            {
+                Append($"Dishes used in: {UsedIn}");
+            }
+            return result.ToString();
+        }
         public override string ToString()
         {
-            var result = new StringBuilder($"Id: {Id} Name: {Name}");
-            if (Description != null)
-                result.Append($", Description: {Description}");
-            if (Quantity != null)
-                result.Append($", Quantity: {Quantity}");
-            if (Unit != null)
-                result.Append($", Unit: {Unit}");
-            result.Append($", Used in (Dishes): {UsedIn}");
-            return result.ToString();
+            return ToDetailedString();
         }
         public string[] ToTableRow()
         {

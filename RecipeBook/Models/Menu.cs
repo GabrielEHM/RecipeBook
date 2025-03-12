@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using ConsoleTables;
+using Dapper;
 using RecipeBook.Database.Types;
 using System.Text;
 
@@ -37,13 +38,35 @@ namespace RecipeBook.Models
         {
             return ["Id", "Name", "Description", "Dish Count"];
         }
+        public string ToDetailedString(bool detailed = true, bool inline = false)
+        {
+            var result = new StringBuilder($"Id: {Id}");
+            StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.AppendLine(text);
+            Append($"Name: {Name}");
+            if (Description != null)
+                Append($"Description: {Description}");
+            if (detailed && DishCount > 0)
+            {
+                var table = new ConsoleTable(Dish.GetTableHeaders());
+                foreach (var dish in Dishes)
+                {
+                    table.AddRow(dish.ToTableRow());
+                }
+                result.AppendLine();
+                result.AppendLine($"=== Dishes ===");
+                result.AppendLine();
+                result.AppendLine(table.ToString());
+
+            }
+            else
+            {
+                Append($"Dish Count: {DishCount}");
+            }
+            return result.ToString();
+        }
         public override string ToString()
         {
-            var result = new StringBuilder($"Id: {Id} Name: {Name}");
-            if (Description != null)
-                result.Append($", Description: {Description}");
-            result.Append($", Dish Count: {DishCount}");
-            return result.ToString();
+            return ToDetailedString();
         }
         public string[] ToTableRow()
         {

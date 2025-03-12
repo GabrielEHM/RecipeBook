@@ -14,17 +14,19 @@ namespace RecipeBook.Services
             _repository = dishesRepository;
         }
 
-        public override bool ListAll(int page = 1, int pageSize = 10)
+        public override bool ListAll(CommandAction back, int page = 1, int pageSize = 10)
         {
             bool repeat = true;
+            var backCommand = new Command("Go Back", (_) => { repeat = false; return back(); }, "back");
+            bool ret = true;
             while (repeat)
             {
-                repeat = ConsoleMenuService.ListEntities(_repository.GetPage(page, pageSize), this);
+                ret = ConsoleMenuService.ListEntities(_repository.GetPage(page, pageSize), this, backCommand);
             }
-            return repeat;
+            return ret;
         }
 
-        public override bool GetById(string id)
+        public override bool GetById(string id, CommandAction back)
         {
             throw new NotImplementedException();
         }
