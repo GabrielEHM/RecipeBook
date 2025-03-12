@@ -41,6 +41,7 @@ namespace RecipeBook.Models
         public string ToDetailedString(bool detailed = true, bool inline = false)
         {
             var result = new StringBuilder($"Id: {Id}");
+            result.AppendLine();
             StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.AppendLine(text);
             Append($"Name: {Name}");
             if (Description != null)
@@ -70,7 +71,7 @@ namespace RecipeBook.Models
         }
         public string[] ToTableRow()
         {
-            return [Id.ToString(), Name, Description ?? "", DishCount.ToString()];
+            return [Id.ToString(), Name, Description ?? string.Empty, DishCount.ToString()];
         }
         protected override void FromReader(SqlMapper.GridReader reader)
         {

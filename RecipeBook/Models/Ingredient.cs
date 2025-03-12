@@ -34,9 +34,15 @@ namespace RecipeBook.Models
         {
             return ["Id", "Name", "Description", "Used in (Dishes)"];
         }
+        public static string[] GetTableHeaders(bool inDish)
+        {
+            if (!inDish) return GetTableHeaders();
+            return ["Id", "Name", "Quantity", "Unit"];
+        }
         public string ToDetailedString(bool detailed = true, bool inline = false)
         {
             var result = new StringBuilder($"Id: {Id}");
+            result.AppendLine();
             StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.AppendLine(text);
             Append($"Name: {Name}");
             if (Description != null)
@@ -70,7 +76,12 @@ namespace RecipeBook.Models
         }
         public string[] ToTableRow()
         {
-            return [Id.ToString(), Name, Description ?? "", UsedIn.ToString()];
+            return [Id.ToString(), Name, Description ?? string.Empty, UsedIn.ToString()];
+        }
+        public string[] ToTableRow(bool inDish)
+        {
+            if (!inDish) return ToTableRow();
+            return [Id.ToString(), Name, Quantity?.ToString() ?? "Al gusto", Unit ?? string.Empty];
         }
         protected override void FromReader(SqlMapper.GridReader reader)
         {

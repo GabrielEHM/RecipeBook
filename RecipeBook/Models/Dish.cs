@@ -53,7 +53,8 @@ namespace RecipeBook.Models
         public string ToDetailedString(bool detailed = true, bool inline = false)
         {
             var result = new StringBuilder($"Id: {Id}");
-            StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.Append(text + Environment.NewLine);
+            result.AppendLine();
+            StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.AppendLine(text);
             Append($"Name: {Name}");
             if (Description != null && detailed)
                 Append($"Description: {Description}");
@@ -64,15 +65,22 @@ namespace RecipeBook.Models
                 Append($"Cook time: {CookTime}");
             if (detailed && Ingredients?.Count > 0)
             {
-                var table = new ConsoleTable(Ingredient.GetTableHeaders());
+                var table = new ConsoleTable(Ingredient.GetTableHeaders(true));
                 foreach (var ingredient in Ingredients)
                 {
-                    table.AddRow(ingredient.ToTableRow());
+                    table.AddRow(ingredient.ToTableRow(true));
                 }
                 result.AppendLine();
                 result.AppendLine($"=== Ingredients ===");
                 result.AppendLine();
                 result.AppendLine(table.ToString());
+            }
+            if (detailed)
+            {
+                result.AppendLine();
+                result.AppendLine($"=== Recipe ===");
+                result.AppendLine();
+                result.AppendLine(value: Recipe.Replace("\\n", Environment.NewLine));
             }
             if (detailed && UsedIn > 0)
             {
