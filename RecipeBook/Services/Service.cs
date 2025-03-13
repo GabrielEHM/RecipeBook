@@ -19,7 +19,7 @@ namespace RecipeBook.Services
             {
                 ret = ConsoleMenuService.ShowMenu($"{typeof(T).Name.Pluralize()} - What do you want to do?", new CommandList
                         {
-                            { $"List all {typeof(T).Name.ToLower().Pluralize()}", (_) => ListAll(CommandList.GoBack()) },
+                            { $"List all {typeof(T).Name.ToLower().Pluralize()}", (_) => ListAll(CommandList.GoBackAction) },
                             { $"Add a new {typeof(T).Name.ToLower()}", (_) => Add() },
                             { "Back", (_) => { return repeat = false; } }
                         });
@@ -51,7 +51,7 @@ namespace RecipeBook.Services
                 var options = new CommandList()
                 {
                     { $"Update", (_) => Add(id) },
-                    { $"Delete", (_) => Delete([id]) },
+                    { $"Delete", (_) => repeat = Delete([id], CommandList.DeepGoBackAction) },
                     { "Back", (_) => { repeat = false; return back(); } }
                 };
                 bool ret = true;
@@ -72,6 +72,6 @@ namespace RecipeBook.Services
             }
         }
         public abstract bool Add(string? id = null);
-        public abstract bool Delete(string[] ids);
+        public abstract bool Delete(string[] ids, CommandAction back);
     }
 }

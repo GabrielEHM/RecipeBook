@@ -50,19 +50,14 @@ namespace RecipeBook.Models
         {
             return ["Id", "Name", "Servings", "PrepTime", "CookTime", "Used in (Menus)"];
         }
-        public string ToDetailedString(bool detailed = true, bool inline = false)
+        public override string ToDetailedString(bool detailed = true, bool inline = false)
         {
-            var result = new StringBuilder($"Id: {Id}");
-            result.AppendLine();
-            StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.AppendLine(text);
-            Append($"Name: {Name}");
-            if (Description != null && detailed)
-                Append($"Description: {Description}");
-            Append($"Servings: {Servings}");
+            var result = new StringBuilder(base.ToDetailedString());
+            result.AppendWithInline($"Servings: {Servings}", inline);
             if (PrepTime != null)
-                Append($"Preparation time: {PrepTime}");
+                result.AppendWithInline($"Preparation time: {PrepTime}", inline);
             if (CookTime != null)
-                Append($"Cook time: {CookTime}");
+                result.AppendWithInline($"Cook time: {CookTime}", inline);
             if (detailed && Ingredients?.Count > 0)
             {
                 var table = new ConsoleTable(Ingredient.GetTableHeaders(true));
@@ -97,13 +92,9 @@ namespace RecipeBook.Models
             }
             else
             {
-                Append($"Menus used in: {UsedIn}");
+                result.AppendWithInline($"Menus used in: {UsedIn}", inline);
             }
             return result.ToString();
-        }
-        public override string ToString()
-        {
-            return ToDetailedString();
         }
         public string[] ToTableRow()
         {

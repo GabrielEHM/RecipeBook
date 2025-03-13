@@ -39,18 +39,13 @@ namespace RecipeBook.Models
             if (!inDish) return GetTableHeaders();
             return ["Id", "Name", "Quantity", "Unit"];
         }
-        public string ToDetailedString(bool detailed = true, bool inline = false)
+        public override string ToDetailedString(bool detailed = true, bool inline = false)
         {
-            var result = new StringBuilder($"Id: {Id}");
-            result.AppendLine();
-            StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.AppendLine(text);
-            Append($"Name: {Name}");
-            if (Description != null)
-                Append($"Description: {Description}");
+            var result = new StringBuilder(base.ToDetailedString());
             if (Quantity != null)
-                Append($"Quantity: {Quantity}");
+                result.AppendWithInline($"Quantity: {Quantity}", inline);
             if (Unit != null)
-                Append($"Unit: {Unit}");
+                result.AppendWithInline($"Unit: {Unit}", inline);
             if (detailed && UsedIn > 0)
             {
                 var table = new ConsoleTable(Dish.GetTableHeaders());
@@ -66,13 +61,9 @@ namespace RecipeBook.Models
             } 
             else
             {
-                Append($"Dishes used in: {UsedIn}");
+                result.AppendWithInline($"Dishes used in: {UsedIn}", inline);
             }
             return result.ToString();
-        }
-        public override string ToString()
-        {
-            return ToDetailedString();
         }
         public string[] ToTableRow()
         {

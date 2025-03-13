@@ -9,6 +9,8 @@
     }
     class CommandList : List<Command>
     {
+        public static CommandAction GoBackAction = static (_) => { return true; };
+        public static CommandAction DeepGoBackAction = static (_) => { return false; };
         public void Add(string name, CommandAction callback, string? trigger = null)
         {
             base.Add(new Command(name, callback, getValidTrigger(trigger, name)));
@@ -86,15 +88,6 @@
                 throw new ArgumentException($"We were unable to find a unique trigger for the '{name}' command.");
             }
             return proposedTrigger;
-        }
-
-        public static CommandAction GoBack()
-        {
-            return (_) => { return true; };
-        }
-        public static CommandAction DeepGoBack()
-        {
-            return (_) => { return false; };
         }
     }
 }

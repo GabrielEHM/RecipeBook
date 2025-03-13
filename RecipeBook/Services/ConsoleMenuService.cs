@@ -55,9 +55,9 @@ namespace RecipeBook.Services
                     { "Update ingredient <id>", (args) => service.Add(id: args[0]) , "update"},
                     { "Detail <id>", (args) => {
                             if (!CommandList.ValidateArgs(args, 1, "You need to provide an id to show the details of")) return true;
-                            return service.GetById(id: args[0], CommandList.GoBack());
+                            return service.GetById(id: args[0], CommandList.GoBackAction);
                         }, "detail" },
-                    { "Delete <id1> [<id2> <...> <idn>]", (args) => service.Delete(ids: args), "delete" }
+                    { "Delete <id1> [<id2> <...> <idn>]", (args) => service.Delete(ids: args, CommandList.GoBackAction), "delete" }
                 };
 
             if (page.Pagination.PageTotal > 1)
@@ -67,12 +67,12 @@ namespace RecipeBook.Services
                     var pageNumber = int.Parse(args[0]);
                     var pageSize = args.Length > 1 ? int.Parse(args[1]) : page.Pagination.PageSize;
                     if (pageNumber < 1 || pageNumber > page.Pagination.PageTotal) return CommandList.InvalidChoice("The page number is out of range");
-                    return service.ListAll(CommandList.DeepGoBack(),pageNumber, pageSize);
+                    return service.ListAll(CommandList.DeepGoBackAction,pageNumber, pageSize);
                 }, "goto"));
             if (page.Pagination.Page < page.Pagination.PageTotal)
-                listOptions.Add(new Command("Next Page", (args) => { return service.ListAll(CommandList.DeepGoBack(), page: page.Pagination.Page + 1, pageSize: page.Pagination.PageSize); }, "next"));
+                listOptions.Add(new Command("Next Page", (args) => { return service.ListAll(CommandList.DeepGoBackAction, page: page.Pagination.Page + 1, pageSize: page.Pagination.PageSize); }, "next"));
             if (page.Pagination.Page > 1)
-                listOptions.Add(new Command("Previous Page", (args) => { return service.ListAll(CommandList.DeepGoBack(), page: page.Pagination.Page - 1, pageSize: page.Pagination.PageSize); }, "prev"));
+                listOptions.Add(new Command("Previous Page", (args) => { return service.ListAll(CommandList.DeepGoBackAction, page: page.Pagination.Page - 1, pageSize: page.Pagination.PageSize); }, "prev"));
             listOptions.Add(backCommand);
 
             return ShowMenu("Options", listOptions, "Enter your choice: ", false);

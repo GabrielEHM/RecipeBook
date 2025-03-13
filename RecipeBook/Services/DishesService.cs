@@ -29,7 +29,7 @@ namespace RecipeBook.Services
                 var options = new CommandList()
                 {
                     { $"Update", (_) => Add(id) },
-                    { $"Delete", (_) => Delete([id]) },
+                    { $"Delete", (_) => repeat = Delete([id], CommandList.DeepGoBackAction) },
                     { "Back", (_) => { repeat = false; return back(); } }
                 };
                 bool ret = true;
@@ -55,7 +55,7 @@ namespace RecipeBook.Services
             throw new NotImplementedException();
         }
 
-        public override bool Delete(string[] ids)
+        public override bool Delete(string[] ids, CommandAction back)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace RecipeBook.Services
                 }
                 _repository.Remove(convertedIds);
                 ConsoleMenuService.ShowMessage($"The Dishes {convertedIds.Humanize()} were deleted successfully.");
-                return true;
+                return back();
             }
             catch (FormatException ex)
             {

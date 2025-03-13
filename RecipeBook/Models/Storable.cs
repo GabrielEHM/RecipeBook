@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.Text;
 
 namespace RecipeBook.Models
 {
@@ -21,6 +22,19 @@ namespace RecipeBook.Models
             if (entity is null) return null;
             entity.FromReader(reader);
             return entity;
+        }
+        public virtual string ToDetailedString(bool detailed = true, bool inline = false)
+        {
+            var result = new StringBuilder($"Id: {Id}");
+            result.AppendLine();
+            result.AppendWithInline($"Name: {Name}", inline);
+            if (Description != null)
+                result.AppendWithInline($"Description: {Description}", inline);
+            return result.ToString();
+        }
+        public override string ToString()
+        {
+            return ToDetailedString();
         }
     }
 }

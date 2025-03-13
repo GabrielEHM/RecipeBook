@@ -19,7 +19,7 @@ namespace RecipeBook.Services
             throw new NotImplementedException();
         }
 
-        public override bool Delete(string[] ids)
+        public override bool Delete(string[] ids, CommandAction back)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace RecipeBook.Services
                 }
                 _repository.Remove(convertedIds);
                 ConsoleMenuService.ShowMessage($"The Menus {convertedIds.Humanize()} were deleted successfully.");
-                return true;
+                return back();
             }
             catch (FormatException ex)
             {

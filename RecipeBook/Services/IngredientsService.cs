@@ -20,7 +20,7 @@ namespace RecipeBook.Services
             throw new NotImplementedException();
         }
 
-        public override bool Delete(string[] ids)
+        public override bool Delete(string[] ids, CommandAction back)
         {
             try
             {
@@ -46,7 +46,7 @@ namespace RecipeBook.Services
                     messages.Add($"The following ingredients are being used and cannot be deleted: {used.Humanize(",")}");
                 }
                 ConsoleMenuService.ShowMessage([.. messages]);
-                return true;
+                return back();
             }
             catch (FormatException ex)
             {

@@ -38,14 +38,9 @@ namespace RecipeBook.Models
         {
             return ["Id", "Name", "Description", "Dish Count"];
         }
-        public string ToDetailedString(bool detailed = true, bool inline = false)
+        public override string ToDetailedString(bool detailed = true, bool inline = false)
         {
-            var result = new StringBuilder($"Id: {Id}");
-            result.AppendLine();
-            StringBuilder Append(string text) => _ = inline ? result.Append($", {text}") : result.AppendLine(text);
-            Append($"Name: {Name}");
-            if (Description != null)
-                Append($"Description: {Description}");
+            var result = new StringBuilder(base.ToDetailedString());
             if (detailed && DishCount > 0)
             {
                 var table = new ConsoleTable(Dish.GetTableHeaders());
@@ -61,13 +56,9 @@ namespace RecipeBook.Models
             }
             else
             {
-                Append($"Dish Count: {DishCount}");
+                result.AppendWithInline($"Dish Count: {DishCount}", inline);
             }
             return result.ToString();
-        }
-        public override string ToString()
-        {
-            return ToDetailedString();
         }
         public string[] ToTableRow()
         {

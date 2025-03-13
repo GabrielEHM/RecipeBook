@@ -249,10 +249,20 @@ BEGIN
 	FROM [dbo].[Ingredients]
 	WHERE id = @id
 
-	SELECT d.*
+	SELECT d.id
+		  ,d.name
+		  ,d.description
+		  ,d.servings
+		  ,d.prep_time AS 'prepTime'
+		  ,d.cook_time AS 'cookTime'
+		  ,COUNT(DISTINCT mi.menuId) AS 'usedIn'
 	FROM [dbo].[DishesIngredients] di
 	JOIN [dbo].[Dishes] d ON di.dishId = d.id
+	LEFT JOIN [dbo].[MenuDishes] mi
+		ON d.id = mi.dishId
 	WHERE di.ingredientId = @id
+	GROUP BY d.id, d.name, d.description, d.servings, d.prep_time, d.cook_time
+    ORDER BY d.id
 END
 GO
 
@@ -391,16 +401,27 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	SELECT *
-	FROM [dbo].[Dishes]
+	SELECT d.id
+		  ,d.name
+		  ,d.description
+		  ,d.servings
+		  ,d.prep_time AS 'prepTime'
+		  ,d.cook_time AS 'cookTime'
+		  ,d.recipe
+	FROM [dbo].[Dishes] d
 	WHERE id = @id
 
 	SELECT * FROM dbo.GetDishAdjustedIngredients(@id, @servings)
 
-	SELECT DISTINCT m.*
+	SELECT m.id
+		  ,m.name
+		  ,m.description
+		  ,COUNT(md.dishId) AS 'dishCount'
 	FROM [dbo].[MenuDishes] md
 	JOIN [dbo].[Menus] m ON md.menuId = m.id
 	WHERE md.dishId = @id
+	GROUP BY m.id, m.name, m.description
+    ORDER BY m.id
 END
 GO
 
@@ -426,10 +447,10 @@ BEGIN
 		  ,d.servings
 		  ,d.prep_time AS 'prepTime'
 		  ,d.cook_time AS 'cookTime'
-		  ,COUNT(DISTINCT mi.menuId) AS 'usedIn'
+		  ,COUNT(DISTINCT md.menuId) AS 'usedIn'
     FROM [dbo].[Dishes] d
-	LEFT JOIN [dbo].[MenuDishes] mi
-		ON d.id = mi.dishId
+	LEFT JOIN [dbo].[MenuDishes] md
+		ON d.id = md.dishId
 	GROUP BY d.id, d.name, d.description, d.servings, d.prep_time, d.cook_time
     ORDER BY d.id
     OFFSET (@PageNumber - 1) * @PageSize ROWS
@@ -454,10 +475,18 @@ BEGIN
 	FROM [dbo].[Menus]
 	WHERE id = @id
 
-	SELECT d.*, md.servings
+	SELECT d.id
+		  ,d.name
+		  ,d.description
+		  ,md.servings
+		  ,d.prep_time AS 'prepTime'
+		  ,d.cook_time AS 'cookTime'
+		  ,COUNT(DISTINCT md.menuId) AS 'usedIn'
 	FROM [dbo].[MenuDishes] md
 	JOIN [dbo].[Dishes] d ON md.dishId = d.id
 	WHERE md.menuId = @id
+	GROUP BY d.id, d.name, d.description, md.servings, d.prep_time, d.cook_time
+    ORDER BY d.id
 END
 GO
 
@@ -480,10 +509,10 @@ BEGIN
     SELECT m.id
 		  ,m.name
 		  ,m.description
-		  ,COUNT(mi.dishId) AS 'dishCount'
+		  ,COUNT(md.dishId) AS 'dishCount'
     FROM [dbo].[Menus] m
-	LEFT JOIN [dbo].[MenuDishes] mi
-		ON m.id = mi.menuId
+	LEFT JOIN [dbo].[MenuDishes] md
+		ON m.id = md.menuId
 	GROUP BY m.id, m.name, m.description
     ORDER BY m.id
     OFFSET (@PageNumber - 1) * @PageSize ROWS
