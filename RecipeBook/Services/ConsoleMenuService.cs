@@ -1,8 +1,5 @@
 ﻿using ConsoleTables;
-using Humanizer;
 using RecipeBook.Models;
-using System.Diagnostics.Metrics;
-using System.Diagnostics;
 
 namespace RecipeBook.Services
 {
@@ -67,7 +64,7 @@ namespace RecipeBook.Services
                     var pageNumber = int.Parse(args[0]);
                     var pageSize = args.Length > 1 ? int.Parse(args[1]) : page.Pagination.PageSize;
                     if (pageNumber < 1 || pageNumber > page.Pagination.PageTotal) return CommandList.InvalidChoice("The page number is out of range");
-                    return service.ListAll(CommandList.DeepGoBackAction,pageNumber, pageSize);
+                    return service.ListAll(CommandList.DeepGoBackAction, pageNumber, pageSize);
                 }, "goto"));
             if (page.Pagination.Page < page.Pagination.PageTotal)
                 listOptions.Add(new Command("Next Page", (args) => { return service.ListAll(CommandList.DeepGoBackAction, page: page.Pagination.Page + 1, pageSize: page.Pagination.PageSize); }, "next"));

@@ -1,7 +1,5 @@
-﻿using Azure;
-using ConsoleTables;
+﻿using ConsoleTables;
 using Dapper;
-using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace RecipeBook.Models
@@ -58,7 +56,7 @@ namespace RecipeBook.Models
                 result.AppendLine();
                 result.AppendLine(table.ToString());
 
-            } 
+            }
             else
             {
                 result.AppendWithInline($"Dishes used in: {UsedIn}", inline);
@@ -77,6 +75,12 @@ namespace RecipeBook.Models
         protected override void FromReader(SqlMapper.GridReader reader)
         {
             Dishes = reader.Read<Dish>().ToList();
+        }
+        protected override List<string> GetFillablePropertiesNames()
+        {
+            var names = base.GetFillablePropertiesNames();
+            names.AddRange(["Quantity", "Unit"]);
+            return names;
         }
     }
 }

@@ -1,10 +1,4 @@
 ﻿using Microsoft.Data.SqlClient.Server;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RecipeBook.Database.Types
 {
@@ -14,7 +8,8 @@ namespace RecipeBook.Database.Types
     }
     class IntList : List<IntListRow>
     {
-        public IntList(int[] ids) {
+        public IntList(int[] ids)
+        {
             foreach (int id in ids)
             {
                 this.Add(new IntListRow { Id = id });

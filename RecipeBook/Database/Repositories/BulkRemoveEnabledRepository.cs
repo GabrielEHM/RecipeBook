@@ -3,7 +3,7 @@ using RecipeBook.Models;
 
 namespace RecipeBook.Database.Repositories
 {
-    class BulkRemoveEnabledRepository<T>(DbService dbService) : Repository<T>(dbService) where T: Storable, IPageable
+    class BulkRemoveEnabledRepository<T>(DbService dbService) : Repository<T>(dbService) where T : Storable, IPageable
     {
         public virtual void Remove(int[] ids)
         {

@@ -10,7 +10,8 @@ namespace RecipeBook.Database.Types
         public decimal? Quantity { get; set; }
         public string? Unit { get; set; }
     }
-    class IngredientList: List<IngredientListRow> {
+    class IngredientList : List<IngredientListRow>
+    {
         public IngredientList(List<Ingredient> ingredients)
         {
             foreach (var ingredient in ingredients)

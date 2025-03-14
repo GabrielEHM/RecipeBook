@@ -105,5 +105,11 @@ namespace RecipeBook.Models
             Ingredients = reader.Read<Ingredient>().ToList();
             Menus = reader.Read<Menu>().ToList();
         }
+        protected override List<string> GetFillablePropertiesNames()
+        {
+            var names = base.GetFillablePropertiesNames();
+            names.AddRange(["Servings", "PrepTime", "CookTime", "Ingredients"]);
+            return names;
+        }
     }
 }

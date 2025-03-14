@@ -68,5 +68,11 @@ namespace RecipeBook.Models
         {
             Dishes = reader.Read<Dish>().ToList();
         }
+        protected override List<string> GetFillablePropertiesNames()
+        {
+            var names = base.GetFillablePropertiesNames();
+            names.AddRange(["Dishes"]);
+            return names;
+        }
     }
 }

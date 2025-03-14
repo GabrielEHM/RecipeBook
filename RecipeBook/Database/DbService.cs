@@ -172,7 +172,7 @@ namespace RecipeBook.Database
             {
                 using (var connection = _databaseConnection.GetConnection())
                 {
-                    
+
                     return connection.QuerySingle<bool>(procedureName, new { id }, commandType: System.Data.CommandType.StoredProcedure);
                 }
             }

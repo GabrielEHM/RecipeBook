@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using System.Reflection;
 using System.Text;
 
 namespace RecipeBook.Models
@@ -35,6 +36,22 @@ namespace RecipeBook.Models
         public override string ToString()
         {
             return ToDetailedString();
+        }
+        protected virtual List<string> GetFillablePropertiesNames()
+        {
+            return ["Name", "Description"];
+        }
+
+        public virtual PropertyInfo[] GetFillableProperties()
+        {
+            var properties = new PropertyInfo[] { };
+            var fillablePropertiesNames = GetFillablePropertiesNames();
+            foreach (var propertyName in fillablePropertiesNames)
+            {
+                var prop = GetType().GetProperty(propertyName);
+                if (prop is not null) properties = [.. properties, prop];
+            }
+            return properties;
         }
     }
 }

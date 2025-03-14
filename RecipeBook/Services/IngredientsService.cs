@@ -1,5 +1,4 @@
-﻿using Azure;
-using Humanizer;
+﻿using Humanizer;
 using RecipeBook.Database.Repositories;
 using RecipeBook.Models;
 
